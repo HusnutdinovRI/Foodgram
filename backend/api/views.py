@@ -95,9 +95,9 @@ class SubscriptionsViewSet(ModelViewSet):
     def create(self, request, user_id=None):
         subscriber_id = user_id
         subscriber = get_object_or_404(User, id=subscriber_id)
-        serializer = self.serializer_class(data={
-            'subscriber': subscriber_id
-            }, context={'request': request})
+        serializer = self.serializer_class(
+            data={'subscriber': subscriber_id},
+            context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         users = [subscriber]
@@ -195,9 +195,9 @@ class ShoppingCartViewSet(ModelViewSet):
 
     def create(self, request, recipe_id=None):
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer = self.serializer_class(data={
-            'recipe': recipe_id
-            }, context={'request': request})
+        serializer = self.serializer_class(
+            data={'recipe': recipe_id},
+            context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         user_serializer = LimitedRecipeSerializer(recipe, many=False,

@@ -64,8 +64,7 @@ class UserDisplaySerializer(CreateUserSerializer):
             subscriber = request.user
             subscribed_user = obj
             is_subscribed = Subscriptions.objects.filter(
-                user=subscriber, subscriber=subscribed_user
-                ).exists()
+                user=subscriber, subscriber=subscribed_user).exists()
             return is_subscribed
         return False
 

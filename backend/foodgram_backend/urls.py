@@ -24,7 +24,7 @@ urlpatterns = [
     path('api/auth/token/logout/', Logout.as_view()),
     path('api/users/<int:user_id>/subscribe/',
          SubscriptionsViewSet.as_view(
-            {'post': 'create', 'delete': 'destroy'}), name='subscribe'),
+             {'post': 'create', 'delete': 'destroy'}), name='subscribe'),
     path('api/recipes/<int:recipe_id>/favorite/',
          FavoriteViewSet.as_view(
              {'post': 'create', 'delete': 'destroy'}), name='add_to_favorite'),
@@ -33,6 +33,6 @@ urlpatterns = [
              {'post': 'create', 'delete': 'destroy'}), name='shopping_list'),
     path('api/recipes/download_shopping_cart/',
          DownloadShoppingCartViewSet.as_view(
-              {'get': 'download'}), name='download_shopping_cart'),
+             {'get': 'download'}), name='download_shopping_cart'),
     path('api/', include(router.urls))
 ]
