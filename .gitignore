@@ -131,6 +131,4 @@ dmypy.json
 # .idea
 .idea
 
-.gitignore
-.dockerignore
 *.bak
