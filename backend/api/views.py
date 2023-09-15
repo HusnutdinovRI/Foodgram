@@ -81,9 +81,8 @@ class ShoppingCartViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def create(self, request, recipe_id=None):
-        serializer = self.serializer_class(data={
-            'recipe': recipe_id
-            }, context={'request': request})
+        serializer = self.serializer_class(data={'recipe': recipe_id},
+                                           context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         user_serializer = LimitedRecipeSerializer(serializer.instance.recipe,
