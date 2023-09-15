@@ -3,8 +3,9 @@ from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import Count
 
-from .models import Subscriptions, Tag, Ingredient, Recipe, Favorite
+from .models import Tag, Ingredient, Recipe, Favorite
 from .models import RecipeIngredient, RecipeTag, ShoppingCart
+from users.models import Subscriptions
 
 admin.site.unregister(User)
 

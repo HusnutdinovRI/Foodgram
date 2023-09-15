@@ -7,8 +7,9 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
 
-from recipes.models import User, Subscriptions, Tag, Ingredient
+from recipes.models import User, Tag, Ingredient
 from recipes.models import Recipe, RecipeIngredient, Favorite, ShoppingCart
+from users.models import Subscriptions
 
 
 class CreateUserSerializer(UserCreateSerializer):
@@ -252,19 +253,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        instance.name = self.context['request'].data.get('name', instance.name)
-        instance.text = self.context['request'].data.get('text', instance.text)
-        instance.cooking_time = self.context['request'].data.get(
-            'cooking_time', instance.text)
+        super().update(instance, validated_data)
         instance.tags.set(self.context['request'].data.get('tags'))
-
-        image_data = self.context['request'].data.get('image')
-        if image_data:
-            format, imgstr = image_data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(
-                base64.b64decode(imgstr), name=f'recipe_image.{ext}')
-            instance.image = data
 
         RecipeIngredient.objects.filter(recipe=instance).delete()
 

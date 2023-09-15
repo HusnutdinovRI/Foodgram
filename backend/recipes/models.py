@@ -3,33 +3,18 @@ from django.db import models
 
 User = get_user_model()
 
-
-class Subscriptions(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Подписчик',
-        related_name='user'
-    )
-    subscriber = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Автор',
-        related_name='subscriber'
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        ordering = ['id']
+MAX_LENGTH_NAME = 256
+MAX_LENGTH_COLOR = 16
+MAX_LENGTH_SLUG = 50
+MAX_LENGTH_UNIT = 50
 
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=100,
+        max_length=MAX_LENGTH_NAME,
         verbose_name='Название')
     measurement_unit = models.CharField(
-        max_length=50,
+        max_length=MAX_LENGTH_UNIT,
         verbose_name='Единицы измерения')
 
     def __str__(self):
@@ -42,14 +27,14 @@ class Ingredient(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=256,
+        max_length=MAX_LENGTH_NAME,
         unique=True,
         verbose_name='Название')
     color = models.CharField(
-        max_length=16,
+        max_length=MAX_LENGTH_COLOR,
         verbose_name='Цвет')
     slug = models.SlugField(
-        max_length=50,
+        max_length=MAX_LENGTH_SLUG,
         unique=True,
         verbose_name='Slug')
 
@@ -70,7 +55,7 @@ class Recipe(models.Model):
         verbose_name='Автор'
     )
     name = models.CharField(
-        max_length=200,
+        max_length=MAX_LENGTH_NAME,
         verbose_name='Название')
     image = models.ImageField(
         upload_to='media/',

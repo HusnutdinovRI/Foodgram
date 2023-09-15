@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from api.views import UsersView, CustomAuthToken, Logout
-from api.views import SubscriptionsViewSet, TagViewSet
+from api.views import TagViewSet
 from api.views import IngridientViewSet, RecipeViewSet
 from api.views import FavoriteViewSet, ShoppingCartViewSet
 from api.views import DownloadShoppingCartViewSet
+from api.users_views import UsersView, Logout, CustomAuthToken
+from api.users_views import SubscriptionsViewSet
 
 
 router = routers.DefaultRouter()
