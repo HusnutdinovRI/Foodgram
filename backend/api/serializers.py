@@ -241,13 +241,17 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(self.context['request'].data.get('tags'))
+        ingredients = self.context['request'].data.get('ingredients')
 
-        for ingredient_data in self.context['request'].data.get('ingredients'):
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data['id'])
-            RecipeIngredient.objects.create(recipe=recipe,
-                                            ingredient=ingredient,
-                                            amount=ingredient_data['amount'])
+        recipe_ingredients = [
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=get_object_or_404(
+                    Ingredient,
+                    id=ingredient_data['id']),
+                amount=ingredient_data['amount'])
+            for ingredient_data in ingredients]
+        RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
         return recipe
 
@@ -255,15 +259,19 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         super().update(instance, validated_data)
         instance.tags.set(self.context['request'].data.get('tags'))
+        ingredients = self.context['request'].data.get('ingredients')
 
         RecipeIngredient.objects.filter(recipe=instance).delete()
 
-        for ingredient_data in self.context['request'].data.get('ingredients'):
-            ingredient = get_object_or_404(
-                Ingredient, id=ingredient_data['id'])
-            RecipeIngredient.objects.create(recipe=instance,
-                                            ingredient=ingredient,
-                                            amount=ingredient_data['amount'])
+        recipe_ingredients = [
+            RecipeIngredient(
+                recipe=instance,
+                ingredient=get_object_or_404(
+                    Ingredient,
+                    id=ingredient_data['id']),
+                amount=ingredient_data['amount'])
+            for ingredient_data in ingredients]
+        RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
         instance.save()
         return instance
