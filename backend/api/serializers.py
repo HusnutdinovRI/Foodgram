@@ -65,7 +65,7 @@ class UserDisplaySerializer(CreateUserSerializer):
             user = request.user
             subscribed_user = obj
             is_subscribed = Subscriptions.objects.filter(
-                    user=user, subscriber=subscribed_user).exists()
+                user=user, subscriber=subscribed_user).exists()
             return is_subscribed
         return False
 
@@ -209,7 +209,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             user = request.user
             recipe = obj
             is_favorited = Favorite.objects.filter(
-                    user=user, recipe=recipe).exists()
+                user=user, recipe=recipe).exists()
             return is_favorited
         return False
 
@@ -219,7 +219,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             user = request.user
             recipe = obj
             is_in_cart = ShoppingCart.objects.filter(
-                    user=user, recipe=recipe).exists()
+                user=user, recipe=recipe).exists()
             return is_in_cart
         return False
 
