@@ -252,7 +252,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        super().update(instance, validated_data) 
+        super().update(instance, validated_data)
         instance.tags.set(self.context['request'].data.get('tags'))
 
         RecipeIngredient.objects.filter(recipe=instance).delete()
