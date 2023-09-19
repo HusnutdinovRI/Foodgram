@@ -10,7 +10,7 @@ from recipes.models import Tag, Ingredient
 from recipes.models import Recipe, Favorite, ShoppingCart
 from .serializers import TagSerializer
 from .serializers import RecipeSerializer, IngredientSerializer
-from .serializers import FavoriteSerializer, LimitedRecipeSerializer
+from .serializers import FavoriteSerializer
 from .serializers import ShoppingCartSerializer
 from .permissions import IsOwnerOrReadOnly
 from .permissions import IsAdminUserOrReadOnly
@@ -65,10 +65,7 @@ class FavoriteViewSet(ModelViewSet):
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        user_serializer = LimitedRecipeSerializer(serializer.instance.recipe,
-                                                  many=False,
-                                                  context={'request': request})
-        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ShoppingCartViewSet(ModelViewSet):
@@ -85,10 +82,7 @@ class ShoppingCartViewSet(ModelViewSet):
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        user_serializer = LimitedRecipeSerializer(serializer.instance.recipe,
-                                                  many=False,
-                                                  context={'request': request})
-        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class DownloadShoppingCartViewSet(ModelViewSet):

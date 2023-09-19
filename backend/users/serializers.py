@@ -7,9 +7,8 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
 
-from recipes.models import User, Tag, Ingredient
+from recipes.models import User, Subscriptions, Tag, Ingredient
 from recipes.models import Recipe, RecipeIngredient, Favorite, ShoppingCart
-from users.models import Subscriptions
 
 
 class CreateUserSerializer(UserCreateSerializer):
@@ -61,11 +60,11 @@ class UserDisplaySerializer(CreateUserSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request and request.user.id:
-            user = request.user
+        if request and request.user.is_authenticated:
+            subscriber = request.user
             subscribed_user = obj
             is_subscribed = Subscriptions.objects.filter(
-                    user=user, subscriber=subscribed_user).exists()
+                user=subscriber, subscriber=subscribed_user).exists()
             return is_subscribed
         return False
 
@@ -205,21 +204,21 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
-        if request and request.user.id:
+        if request and request.user.is_authenticated:
             user = request.user
             recipe = obj
             is_favorited = Favorite.objects.filter(
-                    user=user, recipe=recipe).exists()
+                user=user, recipe=recipe).exists()
             return is_favorited
         return False
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
-        if request and request.user.id:
+        if request and request.user.is_authenticated:
             user = request.user
             recipe = obj
             is_in_cart = ShoppingCart.objects.filter(
-                    user=user, recipe=recipe).exists()
+                user=user, recipe=recipe).exists()
             return is_in_cart
         return False
 
@@ -241,36 +240,32 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(self.context['request'].data.get('tags'))
-        ingredients = self.context['request'].data.get('ingredients')
 
-        self.create_recipe_ingredients(recipe, ingredients)
+        for ingredient_data in self.context['request'].data.get('ingredients'):
+            ingredient = get_object_or_404(
+                Ingredient, id=ingredient_data['id'])
+            RecipeIngredient.objects.create(recipe=recipe,
+                                            ingredient=ingredient,
+                                            amount=ingredient_data['amount'])
 
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        super().update(instance, validated_data)
+        super().update(instance, validated_data) 
         instance.tags.set(self.context['request'].data.get('tags'))
-        ingredients = self.context['request'].data.get('ingredients')
 
         RecipeIngredient.objects.filter(recipe=instance).delete()
 
-        self.create_recipe_ingredients(instance, ingredients)
+        for ingredient_data in self.context['request'].data.get('ingredients'):
+            ingredient = get_object_or_404(
+                Ingredient, id=ingredient_data['id'])
+            RecipeIngredient.objects.create(recipe=instance,
+                                            ingredient=ingredient,
+                                            amount=ingredient_data['amount'])
 
         instance.save()
         return instance
-
-    def create_recipe_ingredients(self, recipe, ingredients):
-        recipe_ingredients = [
-            RecipeIngredient(
-                recipe=recipe,
-                ingredient=get_object_or_404(Ingredient,
-                                             id=ingredient_data['id']),
-                amount=ingredient_data['amount']
-            )
-            for ingredient_data in ingredients
-        ]
-        RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
