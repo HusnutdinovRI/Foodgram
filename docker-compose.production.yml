@@ -1,0 +1,34 @@
+version: '3'
+
+volumes:
+  pg_data_production:
+  static_volume:
+  media_volume:
+
+
+services:
+  db:
+    env_file: .env
+    image: postgres:13
+    volumes:
+      - pg_data_production:/var/lib/postgresql/data
+  backend:
+    image: akbarlemon/foodgram_backend
+    env_file: .env
+    volumes:
+      - static_volume:/backend_static
+      - media_volume:/media
+  frontend:
+    env_file: .env
+    image: akbarlemon/foodgram_frontend
+    command: cp -r /app/build/. /static/
+    volumes:
+      - static_volume:/static
+  gateway:
+    image: akbarlemon/foodgram_infra
+    env_file: .env
+    ports:
+      - 9000:80
+    volumes:
+      - static_volume:/static/
+      - media_volume:/media
