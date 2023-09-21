@@ -185,7 +185,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserDisplaySerializer(read_only=True)
-    image = Base64ImageField()
+    image = Base64ImageField(required=False, allow_null=True)
     ingredients = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     name = serializers.CharField(max_length=254)
