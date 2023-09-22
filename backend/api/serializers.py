@@ -238,13 +238,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         self.validate_request_data(self.context['request'])
-
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(self.context['request'].data.get('tags'))
         ingredients = self.context['request'].data.get('ingredients')
-
         self.create_recipe_ingredients(recipe, ingredients)
-
         return recipe
 
     @transaction.atomic
@@ -252,11 +249,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         super().update(instance, validated_data)
         instance.tags.set(self.context['request'].data.get('tags'))
         ingredients = self.context['request'].data.get('ingredients')
-
         RecipeIngredient.objects.filter(recipe=instance).delete()
-
         self.create_recipe_ingredients(instance, ingredients)
-
         instance.save()
         return instance
 
