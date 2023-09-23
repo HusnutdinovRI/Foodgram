@@ -68,8 +68,9 @@ class FavoriteViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset.filter(user=request.user,
+                        recipe_id=self.kwargs['recipe_id']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -90,8 +91,9 @@ class ShoppingCartViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset.filter(user=request.user,
+                        recipe_id=self.kwargs['recipe_id']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
